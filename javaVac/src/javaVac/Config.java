@@ -30,6 +30,4 @@ public class Config {
         File controlFile = new File("src/control/control.txt");
         controlFile.createNewFile();
     }
-    
-
 }

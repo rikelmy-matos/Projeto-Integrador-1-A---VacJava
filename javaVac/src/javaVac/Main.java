@@ -7,6 +7,8 @@ public class Main {
 	
 	// Scanner principal, todos as inputs do usuário vão ser recebidas por este objeto
 	static Scanner scan = new Scanner(System.in); 
+	// variavel loggedin -> validará o login
+	static boolean loggedin;
 	
 	// main -> Onde tudo roda
     public static void main(String[] args) throws IOException{
@@ -28,42 +30,28 @@ public class Main {
     
     // Metodo consiste em verificar se existe um usuário salvo dentro do arquivo users.txt, se sim, vai adicionar o usuário dentro do arquivo de controle(control.txt)
     static boolean loginUser() throws IOException {
+    
         File file = new File("src/users/users.txt");
         if(file.exists()) {
-        	Scanner dataUserLogin = new Scanner(file);
+        	// login and password
         	System.out.print("Informe o seu usuário (Primeiro nome): ");
         	String userLogin = getString();
-
         	System.out.print("Informe a sua senha: ");
         	String userPassword = getString();
         	
-        	while (dataUserLogin.hasNextLine()) {
-        		String stringUser = dataUserLogin.nextLine();
-        		String[] dataUser = stringUser.split(";");
-        		if ((userLogin.equals(dataUser[0])) && (userPassword.equals(dataUser[4]))) {
-        			FileWriter control = new FileWriter("src/control/control.txt");
-        			control.write(dataUser[0] + ";" + dataUser[1] + ";Null");
-        			control.close();
-        			dataUserLogin.close();
-        			return true; 
-                }
-            }
-        	dataUserLogin.close();
+        	// User class loginUserClass method
+        	loggedin = User.loginUserClass(userLogin, userPassword);
+        	return loggedin;
         }
-        System.out.println("\nLogin inválido!");
-        return false;
+		return false;
     }
     
     // Metodo consiste em criar novo usuário, ele pede algumas informações, e adiciona no arquivo de users.txt(necessario para login)
     static void createUser() throws IOException{
-    	
-        System.out.println("---------------------------------------------------");
         System.out.print("Informe o primeiro nome do usuário: ");
-        String firstName = getString();;
-
+        String firstName = getString();
         System.out.print("Informe o último nome do usuário: ");
         String lastName = getString();
-
         System.out.println("Informe a data de nascimento __/__/____: ");
         System.out.print("Dia: ");
         String day = getString();
@@ -72,7 +60,6 @@ public class Main {
         System.out.print("Ano: ");
         String year = getString();
         String birthday = day + "/" + month + "/" + year;
-
         System.out.print("Informe o sexo (1 - M || 2 - F): ");
         String gender = getString();
         
@@ -90,93 +77,34 @@ public class Main {
         
         System.out.print("Informe a senha do usuário: ");
         String password = getString();
-        System.out.println("---------------------------------------------------");
-        User user = new User(firstName, lastName, birthday, gender, password);
-        user.createUserClass();
+   
+        // User class createUserClass method
+        User.createUserClass(firstName, lastName, birthday, gender, password);
         }
     
     // Metodo consiste em adicionar Vacina, dentro do arquivo do usuário, o programa sabe onde colocar a informação, por conta do arquivo de controle(control.txt)-> apos login
-    static void userAddVac() throws IOException {
-        File file = new File("src/control/control.txt");
-        if (file.exists()) {
-            Scanner scan = new Scanner(file); 
-            if (scan.hasNextLine()) {
-            	String stringUser = scan.nextLine();
-                String[] nameUser = stringUser.split(";");
-                String archiveVacUser = "src/usersvac/" + nameUser[0] + "_" + nameUser[1] + ".txt";
-                
-                try (FileWriter archive = new FileWriter(archiveVacUser, true)) {
-                	System.out.print("Informe o nome da vacina: ");
-                    String nomeVacina = getString();
-
-                    System.out.println("Informe a data da vacina (__/__/____)");
-                    System.out.print("Dia: ");
-                    String diaVacina = getString();
-                    System.out.print("Mês: ");
-                    String mesVacina = getString();
-                    System.out.print("Ano: ");
-                    String anoVacina = getString();
-                    String dataVacina = diaVacina + "/" + mesVacina + "/" + anoVacina;
-                    System.out.print("Informe o lote da vacina: ");
-                    String loteVacina = getString();
-                    System.out.print("Informe a dose da vacina: ");
-                    String doseVacina = getString();
-                    System.out.print("Informe o nome do prestador(nome da unidade): ");
-                    String localVacina = getString();
-                    String informacoesVacina = nomeVacina + ";" + dataVacina + ";" + loteVacina + ";" + doseVacina + ";" + localVacina + ";" + "Null\n";
-                    archive.write(informacoesVacina);
-                    System.err.print("\nNova vacina salva: " + nomeVacina + " | No usuário(a): " + nameUser[0] + "_" + nameUser[1] + "\n");
- 
-                }
-            }
-            else {
-            	System.out.println("Arquivo de controle vazio.");
-            	}
-            scan.close();
-            }
-        }
-    
-    // Metodo consiste em ler todas as Vacinas dentro do arquivo do usuário, o programa sabe onde colocar a informação, por conta do arquivo de controle(control.txt)-> apos login
-    static void userReadVac() throws IOException {
-        File file = new File("src/control/control.txt");
-        Scanner scan = new Scanner(file);
-        String arquivoUsuario = scan.nextLine();
-        String[] dadosArquivo = arquivoUsuario.split(";");
-        String arquivoAdicionarVac = "src\\usersvac\\" + dadosArquivo[0] + "_" + dadosArquivo[1] + ".txt";
+    static void userAddVac() throws IOException {     
+    	System.out.print("Informe o nome da vacina: ");
+        String nomeVacina = getString();
+        System.out.println("Informe a data da vacina (__/__/____)");
+        System.out.print("Dia: ");
+        String diaVacina = getString();
+        System.out.print("Mês: ");
+        String mesVacina = getString();
+        System.out.print("Ano: ");
+        String anoVacina = getString();
+        String dataVacina = diaVacina + "/" + mesVacina + "/" + anoVacina;
+        System.out.print("Informe o lote da vacina: ");
+        String loteVacina = getString();
+        System.out.print("Informe a dose da vacina: ");
+        String doseVacina = getString();
+        System.out.print("Informe o nome do prestador(nome da unidade): ");
+        String localVacina = getString();
         
-        File fileUser = new File(arquivoAdicionarVac);
-        if (fileUser.exists()) {
-        	BufferedReader leitor = new BufferedReader(new FileReader(arquivoAdicionarVac));
-            String vacinaLinha;
-            String[] dadosVacina;
-
-            System.err.println("\nSegue dados de todas as vacinas tomadas: \n");
-            System.err.println("---------------------------------------------------\n");
-
-            while ((vacinaLinha = leitor.readLine()) != null) {
-                dadosVacina = vacinaLinha.split(";");
-                System.out.print("Nome da Vacina: ");
-                System.out.println(dadosVacina[0]);
-
-                System.out.print("Data da Vacina: ");
-                System.out.println(dadosVacina[1]);
-
-                System.out.print("Lote da Vacina: ");
-                System.out.println(dadosVacina[2]);
-
-                System.out.print("Dose da Vacina: ");
-                System.out.println(dadosVacina[3]);
-
-                System.out.print("Local da Vacina: ");
-                System.out.println(dadosVacina[4]);
-
-                System.err.println("\n---------------------------------------------------\n");
-            }
-            leitor.close();	
-    	}
-        scan.close();
+        // Card class userAddVacClass method
+        Card.userAddVacClass(nomeVacina, dataVacina, loteVacina, doseVacina, localVacina);
     }
-   
+
     // Metodo do menu principal(O primeiro Menu que vai aparecer) -> Criar usuário e Logar...   
     static boolean menuMain() throws IOException {
         boolean loggedIn = false;
@@ -218,7 +146,7 @@ public class Main {
             String option = getString();
             switch (option) {
         	case "1":
-        		userReadVac();            	
+        		Card.userReadVacClass();            	
         		break;
         	case "2":
         		userAddVac();
