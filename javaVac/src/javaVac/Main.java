@@ -11,9 +11,9 @@ public class Main {
 	// main -> Onde tudo roda
     public static void main(String[] args) throws IOException{
     	// vai criar todos as pastas necessarias
-    	createAllFolders();
+    	Config.createAllFolders();
     	// Vai criar todos os arquivos necessarios
-    	createAllFiles();
+    	Config.createAllFiles();
     	// Menu Principal(pode retornar true ao Logar)
     	boolean loggedIn = menuMain();
     	// Menu Secundaario(somente quando retornou true ao logar no primeiro menu)
@@ -26,32 +26,6 @@ public class Main {
         return option;
     }
     
-    // Metodo consiste em criar as pastas necessarios para que o programa rode normalmente
-    static void createAllFolders() throws IOException {
-    	File ControlFile = new File("src/control/");
-    	File usersFile = new File("src/users/");
-    	File usersVacFile = new File("src/usersvac/");
-    	
-    	if (!usersFile.exists()){
-    		usersFile.mkdir();
-    	}
-    	if (!usersVacFile.exists()){
-    		usersVacFile.mkdir();
-    	}
-    	if (!ControlFile.exists()){
-    		ControlFile.mkdir();
-    	}
-    }
-    
-    // Metodo consiste em criar todos os arquivos necessarios para que o programa rode normalmente(Não inclui as pastas)
-    static void createAllFiles() throws IOException {
-        File usersFile = new File("src/users/users.txt");
-        usersFile.createNewFile();
-
-        File controlFile = new File("src/control/control.txt");
-        controlFile.createNewFile();
-    }
-    
     // Metodo consiste em verificar se existe um usuário salvo dentro do arquivo users.txt, se sim, vai adicionar o usuário dentro do arquivo de controle(control.txt)
     static boolean loginUser() throws IOException {
         File file = new File("src/users/users.txt");
@@ -62,7 +36,7 @@ public class Main {
 
         	System.out.print("Informe a sua senha: ");
         	String userPassword = getString();
-
+        	
         	while (dataUserLogin.hasNextLine()) {
         		String stringUser = dataUserLogin.nextLine();
         		String[] dataUser = stringUser.split(";");
@@ -81,8 +55,8 @@ public class Main {
     }
     
     // Metodo consiste em criar novo usuário, ele pede algumas informações, e adiciona no arquivo de users.txt(necessario para login)
-    static void createUser() throws IOException {
-    	FileWriter createUser = new FileWriter("src/users/users.txt", true);
+    static void createUser() throws IOException{
+    	
         System.out.println("---------------------------------------------------");
         System.out.print("Informe o primeiro nome do usuário: ");
         String firstName = getString();;
@@ -113,14 +87,12 @@ public class Main {
             gender = "Undefined";
             break;
         }
+        
         System.out.print("Informe a senha do usuário: ");
         String password = getString();
         System.out.println("---------------------------------------------------");
-
-        String user = firstName + ";" + lastName + ";" + birthday + ";" + gender + ";" + password + ";Null\n";
-        createUser.append(user);
-        System.err.print("\nUsuário(a) " + firstName + " criado!\n");
-        createUser.close();
+        User user = new User(firstName, lastName, birthday, gender, password);
+        user.createUserClass();
         }
     
     // Metodo consiste em adicionar Vacina, dentro do arquivo do usuário, o programa sabe onde colocar a informação, por conta do arquivo de controle(control.txt)-> apos login
